@@ -1,0 +1,35 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+    wal:
+      path: /var/tempo/wal
+
+# Metrics generator produces service graph and span metrics from traces.
+# Enables the Breakdown / RED metrics tab in Grafana Explore -> Tempo.
+metrics_generator:
+  registry:
+    external_labels:
+      source: tempo
+  storage:
+    path: /var/tempo/metrics
+  processor:
+    service_graphs: {}
+    span_metrics: {}
+
+# Enable the processors for the default (single) tenant.
+overrides:
+  defaults:
+    metrics_generator:
+      processors: [service-graphs, span-metrics]

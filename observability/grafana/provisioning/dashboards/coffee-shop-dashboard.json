@@ -1,0 +1,205 @@
+{
+  "title": "Coffee Shop",
+  "uid": "coffeeshop-overview",
+  "description": "HTTP traffic, JVM metrics, traces and logs for all Coffee Shop microservices",
+  "tags": ["coffeeshop"],
+  "editable": true,
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "HTTP Request Rate (req/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (service_name, http_route) (rate(http_server_request_duration_seconds_count{service_namespace=\"coffeeshop\", http_route!=\"/actuator/health\"}[1m]))",
+          "legendFormat": "{{service_name}} {{http_route}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "HTTP Latency P95 (ms)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "histogram_quantile(0.95, sum by (service_name, le) (rate(http_server_request_duration_seconds_bucket{service_namespace=\"coffeeshop\", http_route!=\"/actuator/health\"}[1m]))) * 1000",
+          "legendFormat": "{{service_name}} p95",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "HTTP Error Rate (4xx/5xx req/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "color": { "mode": "fixed", "fixedColor": "red" },
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (service_name, http_response_status_code) (rate(http_server_request_duration_seconds_count{service_namespace=\"coffeeshop\", http_response_status_code=~\"4..|5..\"}[1m]))",
+          "legendFormat": "{{service_name}} {{http_response_status_code}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "JVM Memory Used (MB)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (service_name) (jvm_memory_used_bytes{service_namespace=\"coffeeshop\"}) / 1024 / 1024",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Outbound HTTP Calls (client req/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 16, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "sum by (service_name) (rate(http_client_request_duration_seconds_count{service_namespace=\"coffeeshop\"}[1m]))",
+          "legendFormat": "{{service_name}} outbound",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "JVM CPU Utilization",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 16, "w": 12, "h": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1,
+          "custom": { "lineWidth": 2 }
+        }
+      },
+      "targets": [
+        {
+          "datasource": { "type": "prometheus", "uid": "prometheus" },
+          "expr": "jvm_cpu_recent_utilization_ratio{service_namespace=\"coffeeshop\"}",
+          "legendFormat": "{{service_name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Recent Traces",
+      "type": "traces",
+      "gridPos": { "x": 0, "y": 24, "w": 24, "h": 10 },
+      "datasource": { "type": "tempo", "uid": "tempo" },
+      "options": {},
+      "targets": [
+        {
+          "datasource": { "type": "tempo", "uid": "tempo" },
+          "queryType": "traceql",
+          "query": "{resource.service.namespace=\"coffeeshop\"}",
+          "limit": 20,
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Application Logs",
+      "type": "logs",
+      "gridPos": { "x": 0, "y": 34, "w": 24, "h": 10 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showTime": true,
+        "wrapLogMessage": false
+      },
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "loki" },
+          "expr": "{service_namespace=\"coffeeshop\"} | json",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}
