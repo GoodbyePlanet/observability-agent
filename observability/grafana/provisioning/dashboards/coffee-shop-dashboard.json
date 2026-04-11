@@ -190,6 +190,12 @@
                 }]
               }
             ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "nested" },
+            "properties": [
+              { "id": "custom.hidden", "value": true }
+            ]
           }
         ]
       },
