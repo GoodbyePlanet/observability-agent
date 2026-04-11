@@ -11,6 +11,15 @@ processors:
     timeout: 5s
     send_batch_size: 1024
 
+  # Drop all DB root spans — startup queries (Hibernate schema introspection,
+  # seed data), Hikari housekeeping, and connection validation. Real user-initiated
+  # DB queries always have a parent HTTP span and are never root spans.
+  filter/drop_db_root_spans:
+    error_mode: ignore
+    traces:
+      span:
+        - 'attributes["db.system"] != nil and IsRootSpan()'
+
 exporters:
   # Metrics -> Prometheus scrape endpoint
   prometheus:
@@ -42,7 +51,7 @@ service:
       exporters: [prometheus, debug]
     traces:
       receivers: [otlp]
-      processors: [batch]
+      processors: [filter/drop_db_root_spans, batch]
       exporters: [otlp/tempo, debug]
     logs:
       receivers: [otlp]

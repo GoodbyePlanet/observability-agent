@@ -166,16 +166,40 @@
     {
       "id": 7,
       "title": "Recent Traces",
-      "type": "traces",
+      "type": "table",
       "gridPos": { "x": 0, "y": 24, "w": 24, "h": 10 },
       "datasource": { "type": "tempo", "uid": "tempo" },
-      "options": {},
+      "options": {
+        "footer": { "show": false },
+        "sortBy": [{ "displayName": "Start time", "desc": true }]
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "displayMode": "auto" }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "traceID" },
+            "properties": [
+              { "id": "displayName", "value": "Trace ID" },
+              {
+                "id": "links",
+                "value": [{
+                  "title": "View Trace",
+                  "url": "/explore?left=%7B%22datasource%22%3A%22tempo%22%2C%22queries%22%3A%5B%7B%22refId%22%3A%22A%22%2C%22query%22%3A%22${__value.raw}%22%2C%22queryType%22%3A%22traceql%22%7D%5D%7D"
+                }]
+              }
+            ]
+          }
+        ]
+      },
       "targets": [
         {
           "datasource": { "type": "tempo", "uid": "tempo" },
           "queryType": "traceql",
           "query": "{resource.service.namespace=\"coffeeshop\"}",
-          "limit": 20,
+          "tableFormat": "traces",
+          "limit": 200,
           "refId": "A"
         }
       ]
