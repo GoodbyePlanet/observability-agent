@@ -16,6 +16,10 @@ storage:
     wal:
       path: /var/tempo/wal
 
+query_frontend:
+  mcp_server:
+    enabled: true
+
 # Metrics generator produces service graph and span metrics from traces.
 # Enables the Breakdown / RED metrics tab in Grafana Explore -> Tempo.
 metrics_generator:
