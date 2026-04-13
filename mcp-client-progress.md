@@ -16,12 +16,12 @@
 - [ ] Verify: test with curl against `/api/chat`
 
 ## Phase 3: React frontend
-- [ ] Scaffold Vite + React + TypeScript project
-- [ ] Implement `useChat` hook with SSE parsing
-- [ ] Implement chat components (ChatWindow, MessageList, MessageBubble, ChatInput)
-- [ ] Implement `ToolCallCard` for inline tool call visualization
-- [ ] Implement `StatusBar` showing connected MCP servers
-- [ ] Style with Tailwind CSS
+- [x] Scaffold Vite + React + TypeScript project
+- [x] Implement `useChat` hook with SSE parsing
+- [x] Implement chat components (ChatWindow, MessageList, MessageBubble, ChatInput)
+- [x] Implement `ToolCallCard` for inline tool call visualization
+- [x] Implement `StatusBar` showing connected MCP servers
+- [x] Style with Tailwind CSS
 
 ## Phase 4: Docker integration
 - [ ] Write multi-stage Dockerfile (Node build + Python runtime)
