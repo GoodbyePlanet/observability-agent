@@ -8,11 +8,11 @@
 - [x] Verify: start backend, confirm it connects to Tempo and lists tools
 
 ## Phase 2: Agent loop + chat endpoint
-- [ ] Implement `agent/system_prompt.py` with coffee-shop domain context
-- [ ] Implement `agent/loop.py` — core agent loop with streaming
-- [ ] Implement `agent/conversation.py` — in-memory session history
-- [ ] Implement `api/chat.py` — SSE streaming endpoint
-- [ ] Implement `main.py` — FastAPI app with lifespan
+- [x] Implement `agent/system_prompt.py` with coffee-shop domain context
+- [x] Implement `agent/loop.py` — core agent loop with streaming
+- [x] Implement `agent/conversation.py` — in-memory session history
+- [x] Implement `api/chat.py` — SSE streaming endpoint
+- [x] Implement `main.py` — FastAPI app with lifespan
 - [ ] Verify: test with curl against `/api/chat`
 
 ## Phase 3: React frontend
