@@ -4,6 +4,7 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 from openai import AsyncOpenAI
+from openai.types.chat import ChatCompletionMessageParam
 
 from backend.agent.conversation import ConversationHistory
 from backend.agent.system_prompt import SYSTEM_PROMPT
@@ -15,6 +16,12 @@ from backend.config import settings
 from backend.mcp.manager import MCPManager
 
 logger = logging.getLogger(__name__)
+
+
+def _build_messages(conversation: ConversationHistory) -> list[ChatCompletionMessageParam]:
+    messages: list[ChatCompletionMessageParam] = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(conversation.get_messages())
+    return messages
 
 
 def _sse_event(event: str, data: Any) -> str:
@@ -43,7 +50,7 @@ async def run_agent_loop(
 
     tools = mcp_tools_to_openai_functions(mcp_manager.get_all_tools())
 
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation.get_messages()
+    messages = _build_messages(conversation)
 
     for iteration in range(settings.max_agent_iterations):
         logger.info("Agent iteration %d", iteration + 1)
@@ -110,7 +117,7 @@ async def run_agent_loop(
             ]
 
             conversation.add_tool_call_message(tool_calls_list)
-            messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation.get_messages()
+            messages = _build_messages(conversation)
 
             for tc in tool_calls_list:
                 func_name = tc["function"]["name"]
@@ -147,7 +154,7 @@ async def run_agent_loop(
                 )
 
                 conversation.add_tool_result(tc["id"], result_text)
-                messages = [{"role": "system", "content": SYSTEM_PROMPT}] + conversation.get_messages()
+                messages = _build_messages(conversation)
 
             # Continue the loop — OpenAI will see the tool results
             continue

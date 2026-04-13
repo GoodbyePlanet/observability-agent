@@ -1,9 +1,11 @@
 from mcp.types import Tool
+from openai.types.chat import ChatCompletionToolParam
+from openai.types.shared_params import FunctionDefinition
 
 
 def mcp_tools_to_openai_functions(
     tools: list[tuple[str, Tool]],
-) -> list[dict]:
+) -> list[ChatCompletionToolParam]:
     """Convert MCP tools to OpenAI function-calling tool definitions.
 
     Each tool is namespaced as {server}__{tool_name} to avoid collisions
@@ -12,14 +14,14 @@ def mcp_tools_to_openai_functions(
     return [_convert_one(server_name, tool) for server_name, tool in tools]
 
 
-def _convert_one(server_name: str, tool: Tool) -> dict:
+def _convert_one(server_name: str, tool: Tool) -> ChatCompletionToolParam:
     return {
         "type": "function",
-        "function": {
-            "name": f"{server_name}__{tool.name}",
-            "description": f"[{server_name}] {tool.description or ''}",
-            "parameters": tool.inputSchema or {"type": "object", "properties": {}},
-        },
+        "function": FunctionDefinition(
+            name=f"{server_name}__{tool.name}",
+            description=f"[{server_name}] {tool.description or ''}",
+            parameters=tool.inputSchema or {"type": "object", "properties": {}},
+        ),
     }
 
 
