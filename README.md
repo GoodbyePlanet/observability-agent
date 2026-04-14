@@ -3,6 +3,9 @@
 A demo project showing how to connect the three pillars of OpenTelemetry (traces, metrics, logs) to an AI agent, giving
 you the ability to query and talk with your platform instrumentation using natural language.
 
+![screenshot-2.png](screenshot-2.png)
+![screenshot.png](screenshot.png)
+
 ## Quick Start
 
 ```bash
@@ -44,7 +47,8 @@ plain English.
 ## Generating Traffic
 
 ```bash
-./generate-traffic.sh
+./generate-success-traffic.sh
+./generate-error-traffic.sh
 ```
 
 ## Prerequisites

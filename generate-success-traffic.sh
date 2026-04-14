@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Generates mixed traffic across all 3 Coffee Shop services.
-# Usage: ./generate-traffic.sh [iterations]   (default: 20)
+# Usage: ./generate-success-traffic.sh [iterations]   (default: 20)
 
 set -euo pipefail
 
@@ -29,13 +29,6 @@ for i in $(seq 1 "$ITERATIONS"); do
   curl -sf -X POST "$ORDER_URL/api/orders" \
     -H "Content-Type: application/json" \
     -d "{\"productId\":\"$PRODUCT\",\"quantity\":$QTY}" > /dev/null
-
-  # Occasionally trigger an error trace (unknown product)
-  if (( i % 5 == 0 )); then
-    curl -sf -X POST "$ORDER_URL/api/orders" \
-      -H "Content-Type: application/json" \
-      -d "{\"productId\":\"$NONEXISTENT\",\"quantity\":1}" > /dev/null || true
-  fi
 
   # Hit catalog and inventory directly for more span variety
   curl -sf "$CATALOG_URL/api/products" > /dev/null
