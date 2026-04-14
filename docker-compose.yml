@@ -164,6 +164,21 @@ services:
       OTEL_TRACES_EXPORTER: otlp
       OTEL_RESOURCE_ATTRIBUTES: "service.namespace=coffeeshop,deployment.environment=local"
 
+  # ──── AI Chat Agent ─────────────────────────────────────────────────────────
+  observability-chat:
+    build:
+      context: ./observability-chat
+    container_name: observability-chat
+    ports:
+      - "8084:8084"
+    depends_on:
+      - tempo
+    env_file:
+      - ./observability-chat/.env
+    environment:
+      MCP_SERVERS: '[{"name":"tempo","url":"http://tempo:3200/api/mcp"}]'
+      CORS_ORIGINS: '["http://localhost:8084"]'
+
 volumes:
   postgres_data:
   tempo_data:
