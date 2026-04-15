@@ -62,6 +62,16 @@ services:
     ports:
       - "3100:3100"
 
+  loki-mcp:
+    build: https://github.com/grafana/loki-mcp.git
+    container_name: loki-mcp
+    environment:
+      LOKI_URL: http://loki:3100
+    ports:
+      - "8085:8080"
+    depends_on:
+      - loki
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -173,10 +183,11 @@ services:
       - "8084:8084"
     depends_on:
       - tempo
+      - loki-mcp
     env_file:
       - ./observability-chat/.env
     environment:
-      MCP_SERVERS: '[{"name":"tempo","url":"http://tempo:3200/api/mcp"}]'
+      MCP_SERVERS: '[{"name":"tempo","url":"http://tempo:3200/api/mcp"},{"name":"loki","url":"http://loki-mcp:8080/stream"}]'
       CORS_ORIGINS: '["http://localhost:8084"]'
 
 volumes:

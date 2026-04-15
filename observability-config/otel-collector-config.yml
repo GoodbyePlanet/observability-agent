@@ -11,6 +11,13 @@ processors:
     timeout: 5s
     send_batch_size: 1024
 
+  # Copy OTLP severity text into a "level" log attribute so Loki can index it.
+  transform/log_level:
+    log_statements:
+      - context: log
+        statements:
+          - set(attributes["level"], severity_text)
+
   # Drop all DB root spans — startup queries (Hibernate schema introspection,
   # seed data), Hikari housekeeping, and connection validation. Real user-initiated
   # DB queries always have a parent HTTP span and are never root spans.
@@ -55,5 +62,5 @@ service:
       exporters: [otlp/tempo, debug]
     logs:
       receivers: [otlp]
-      processors: [batch]
+      processors: [transform/log_level, batch]
       exporters: [otlphttp/loki, debug]

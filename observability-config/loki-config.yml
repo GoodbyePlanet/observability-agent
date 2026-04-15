@@ -14,6 +14,13 @@ common:
     kvstore:
       store: inmemory
 
+limits_config:
+  otlp_config:
+    log_attributes:
+      - action: index_label
+        attributes:
+          - level
+
 schema_config:
   configs:
     - from: 2020-10-24
