@@ -24,6 +24,7 @@ logs/
 # Environment
 .env
 .env.*
+!.env.example
 
 # Docker volumes (local)
 docker-volumes/
