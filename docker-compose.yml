@@ -72,6 +72,19 @@ services:
     depends_on:
       - loki
 
+  prometheus-mcp:
+    image: ghcr.io/pab1it0/prometheus-mcp-server:latest
+    container_name: prometheus-mcp
+    environment:
+      PROMETHEUS_URL: http://prometheus:9090
+      PROMETHEUS_MCP_SERVER_TRANSPORT: http
+      PROMETHEUS_MCP_BIND_HOST: 0.0.0.0
+      PROMETHEUS_MCP_BIND_PORT: "8080"
+    ports:
+      - "8086:8080"
+    depends_on:
+      - prometheus
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -184,10 +197,11 @@ services:
     depends_on:
       - tempo
       - loki-mcp
+      - prometheus-mcp
     env_file:
       - ./observability-chat/.env
     environment:
-      MCP_SERVERS: '[{"name":"tempo","url":"http://tempo:3200/api/mcp"},{"name":"loki","url":"http://loki-mcp:8080/stream"}]'
+      MCP_SERVERS: '[{"name":"tempo","url":"http://tempo:3200/api/mcp"},{"name":"loki","url":"http://loki-mcp:8080/stream"},{"name":"prometheus","url":"http://prometheus-mcp:8080/mcp"}]'
       CORS_ORIGINS: '["http://localhost:8084"]'
 
 volumes:
