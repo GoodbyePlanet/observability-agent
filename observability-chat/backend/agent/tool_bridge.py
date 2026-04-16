@@ -11,10 +11,10 @@ def mcp_tools_to_openai_functions(
     Each tool is namespaced as {server}__{tool_name} to avoid collisions
     when multiple MCP servers expose tools with the same name.
     """
-    return [_convert_one(server_name, tool) for server_name, tool in tools]
+    return [_convert_one_openai(server_name, tool) for server_name, tool in tools]
 
 
-def _convert_one(server_name: str, tool: Tool) -> ChatCompletionToolParam:
+def _convert_one_openai(server_name: str, tool: Tool) -> ChatCompletionToolParam:
     return {
         "type": "function",
         "function": FunctionDefinition(
@@ -22,6 +22,21 @@ def _convert_one(server_name: str, tool: Tool) -> ChatCompletionToolParam:
             description=f"[{server_name}] {tool.description or ''}",
             parameters=tool.inputSchema or {"type": "object", "properties": {}},
         ),
+    }
+
+
+def mcp_tools_to_anthropic_tools(
+    tools: list[tuple[str, Tool]],
+) -> list[dict]:
+    """Convert MCP tools to Anthropic tool definitions."""
+    return [_convert_one_anthropic(server_name, tool) for server_name, tool in tools]
+
+
+def _convert_one_anthropic(server_name: str, tool: Tool) -> dict:
+    return {
+        "name": f"{server_name}__{tool.name}",
+        "description": f"[{server_name}] {tool.description or ''}",
+        "input_schema": tool.inputSchema or {"type": "object", "properties": {}},
     }
 
 

@@ -1,36 +1,33 @@
 from dataclasses import dataclass, field
+from typing import Any
 
-from openai.types.chat import (
-    ChatCompletionAssistantMessageParam,
-    ChatCompletionMessageParam,
-    ChatCompletionToolMessageParam,
-    ChatCompletionUserMessageParam,
-)
+Message = dict[str, Any]
 
 
 @dataclass
 class ConversationHistory:
     """In-memory conversation history for a single session."""
 
-    messages: list[ChatCompletionMessageParam] = field(default_factory=list)
+    messages: list[Message] = field(default_factory=list)
 
     def add_user_message(self, content: str) -> None:
-        self.messages.append(ChatCompletionUserMessageParam(role="user", content=content))
+        self.messages.append({"role": "user", "content": content})
 
     def add_assistant_message(self, content: str) -> None:
-        self.messages.append(ChatCompletionAssistantMessageParam(role="assistant", content=content))
+        self.messages.append({"role": "assistant", "content": content})
 
-    def add_tool_call_message(self, tool_calls: list[dict]) -> None:
-        self.messages.append(
-            ChatCompletionAssistantMessageParam(role="assistant", tool_calls=tool_calls)
-        )
+    def add_tool_call_message(self, tool_calls: list[dict], content: str = "") -> None:
+        msg: Message = {"role": "assistant", "tool_calls": tool_calls}
+        if content:
+            msg["content"] = content
+        self.messages.append(msg)
 
     def add_tool_result(self, tool_call_id: str, content: str) -> None:
         self.messages.append(
-            ChatCompletionToolMessageParam(role="tool", tool_call_id=tool_call_id, content=content)
+            {"role": "tool", "tool_call_id": tool_call_id, "content": content}
         )
 
-    def get_messages(self) -> list[ChatCompletionMessageParam]:
+    def get_messages(self) -> list[Message]:
         return list(self.messages)
 
     def clear(self) -> None:
