@@ -15,4 +15,5 @@ export interface Message {
 export interface HealthResponse {
   status: string;
   mcp_servers: Record<string, string>;
+  model: string;
 }

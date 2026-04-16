@@ -27,6 +27,11 @@ export function StatusBar({ onClear }: StatusBarProps) {
     <div className="flex items-center gap-4 border-b border-neutral-200 px-4 py-2">
       <span className="text-sm font-semibold text-black">Observability Chat</span>
       <div className="ml-auto flex items-center gap-3">
+        {health?.model && (
+          <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
+            {health.model}
+          </span>
+        )}
         {health ? (
           Object.entries(health.mcp_servers).map(([name, status]) => (
             <div key={name} className="flex items-center gap-1.5 text-xs">
