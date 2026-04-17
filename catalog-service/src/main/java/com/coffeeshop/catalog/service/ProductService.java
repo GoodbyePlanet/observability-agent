@@ -22,6 +22,12 @@ public class ProductService {
 
     public List<ProductResponse> findAll() {
         log.info("Fetching all products");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Thread interrupted while fetching products", e);
+        }
         return productRepository.findAll().stream()
                 .map(ProductResponse::from)
                 .toList();
@@ -31,7 +37,10 @@ public class ProductService {
         log.info("Fetching product id={}", id);
         return productRepository.findById(id)
                 .map(ProductResponse::from)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> {
+                    log.error("Product lookup failed - no product with id={}", id);
+                    return new ProductNotFoundException(id);
+                });
     }
 
     @Transactional
@@ -49,7 +58,10 @@ public class ProductService {
     @Transactional
     public ProductResponse update(UUID id, ProductRequest request) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+                .orElseThrow(() -> {
+                    log.error("Cannot update product - not found: id={}", id);
+                    return new ProductNotFoundException(id);
+                });
         product.setName(request.name());
         product.setDescription(request.description());
         product.setPrice(request.price());
@@ -61,6 +73,7 @@ public class ProductService {
     @Transactional
     public void delete(UUID id) {
         if (!productRepository.existsById(id)) {
+            log.error("Cannot delete product - not found: id={}", id);
             throw new ProductNotFoundException(id);
         }
         productRepository.deleteById(id);

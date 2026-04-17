@@ -20,7 +20,10 @@ public class InventoryService {
 
     public InventoryResponse getByProductId(UUID productId) {
         InventoryItem item = repository.findByProductId(productId)
-                .orElseThrow(() -> new InventoryNotFoundException(productId));
+                .orElseThrow(() -> {
+                    log.error("Inventory record not found for productId={}", productId);
+                    return new InventoryNotFoundException(productId);
+                });
         return InventoryResponse.from(item);
     }
 
@@ -42,11 +45,21 @@ public class InventoryService {
     @Transactional
     public ReservationResponse reserve(UUID productId, ReserveStockRequest request) {
         InventoryItem item = repository.findByProductId(productId)
-                .orElseThrow(() -> new InventoryNotFoundException(productId));
+                .orElseThrow(() -> {
+                    log.error("Cannot reserve stock - inventory not found for productId={}", productId);
+                    return new InventoryNotFoundException(productId);
+                });
+
+        try {
+            Thread.sleep(1500);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            log.error("Thread interrupted during stock reservation for productId={}", productId, e);
+        }
 
         int available = item.availableStock();
         if (available < request.quantity()) {
-            log.warn("Insufficient stock for productId={}: requested={}, available={}", productId, request.quantity(), available);
+            log.error("Stock reservation failed for productId={}: requested={}, available={}", productId, request.quantity(), available);
             return new ReservationResponse(false, available, "Insufficient stock");
         }
 
@@ -59,7 +72,14 @@ public class InventoryService {
     @Transactional
     public InventoryResponse updateQuantity(UUID productId, int quantity) {
         InventoryItem item = repository.findByProductId(productId)
-                .orElseThrow(() -> new InventoryNotFoundException(productId));
+                .orElseThrow(() -> {
+                    log.error("Cannot update quantity - inventory not found for productId={}", productId);
+                    return new InventoryNotFoundException(productId);
+                });
+        if (quantity < item.getReserved()) {
+            log.error("Cannot set quantity below reserved amount: productId={}, requested={}, reserved={}",
+                    productId, quantity, item.getReserved());
+        }
         item.setQuantity(quantity);
         log.info("Updated quantity for productId={} to {}", productId, quantity);
         return InventoryResponse.from(repository.save(item));

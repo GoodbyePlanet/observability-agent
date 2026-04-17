@@ -32,15 +32,20 @@ public class OrderService {
     private final InventoryClient inventoryClient;
 
     public List<OrderResponse> findAll() {
+        log.info("Fetching all orders");
         return orderRepository.findAll().stream()
                 .map(OrderResponse::from)
                 .toList();
     }
 
     public OrderResponse findById(UUID id) {
+        log.info("Fetching order id={}", id);
         return orderRepository.findById(id)
                 .map(OrderResponse::from)
-                .orElseThrow(() -> new OrderNotFoundException(id));
+                .orElseThrow(() -> {
+                    log.error("Order not found: id={}", id);
+                    return new OrderNotFoundException(id);
+                });
     }
 
     @WithSpan("order.place")
@@ -60,7 +65,7 @@ public class OrderService {
         try {
             product = catalogClient.getProduct(request.productId());
         } catch (ProductNotFoundInCatalogException ex) {
-            log.warn("Order failed - product not found: {}", request.productId());
+            log.error("Order failed - product not found in catalog: productId={}", request.productId());
             order.setProductName("Unknown");
             order.setUnitPrice(BigDecimal.ZERO);
             order.setTotalPrice(BigDecimal.ZERO);
@@ -77,7 +82,7 @@ public class OrderService {
         ReservationResponse reservation = inventoryClient.reserve(request.productId(), request.quantity());
 
         if (!reservation.success()) {
-            log.warn("Order failed - insufficient stock: productId={}, requested={}, available={}",
+            log.error("Order failed - insufficient stock: productId={}, requested={}, available={}",
                     request.productId(), request.quantity(), reservation.availableStock());
             order.setStatus(OrderStatus.FAILED);
             order.setFailureReason("Insufficient stock: " + reservation.message());
