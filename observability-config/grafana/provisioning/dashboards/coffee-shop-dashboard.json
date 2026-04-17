@@ -226,7 +226,7 @@
       "targets": [
         {
           "datasource": { "type": "loki", "uid": "loki" },
-          "expr": "{service_namespace=\"coffeeshop\"} | json",
+          "expr": "{service_namespace=\"coffeeshop\"}",
           "refId": "A"
         }
       ]
