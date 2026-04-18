@@ -1,0 +1,40 @@
+services:
+  - name: catalog-service
+    path: catalog-service
+    languages: [java]
+    include:
+      - "src/main/java/**/*.java"
+    exclude:
+      - "**/test/**"
+      - "**/target/**"
+
+  - name: order-service
+    path: order-service
+    languages: [java]
+    include:
+      - "src/main/java/**/*.java"
+    exclude:
+      - "**/test/**"
+      - "**/target/**"
+
+  - name: inventory-service
+    path: inventory-service
+    languages: [java]
+    include:
+      - "src/main/java/**/*.java"
+    exclude:
+      - "**/test/**"
+      - "**/target/**"
+
+  - name: observability-chat
+    path: observability-chat
+    languages: [python, typescript]
+    include:
+      - "backend/**/*.py"
+      - "frontend/src/**/*.ts"
+      - "frontend/src/**/*.tsx"
+    exclude:
+      - "**/__pycache__/**"
+      - "**/node_modules/**"
+      - "**/.venv/**"
+      - "**/.uv/**"

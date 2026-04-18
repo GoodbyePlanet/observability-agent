@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+.uv/
+.env
+*.egg-info/
+dist/
+.git/
+.gitignore
+progress.md
