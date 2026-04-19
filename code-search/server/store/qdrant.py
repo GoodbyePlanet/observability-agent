@@ -138,13 +138,14 @@ class QdrantStore:
 
         query_filter = Filter(must=must) if must else None
 
-        return await self._client.search(
+        result = await self._client.query_points(
             collection_name=self._collection,
-            query_vector=query_vector,
+            query=query_vector,
             query_filter=query_filter,
             limit=limit,
             with_payload=True,
         )
+        return result.points
 
     async def find_by_name(
         self,

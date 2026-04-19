@@ -25,7 +25,7 @@ def register_search_tools(mcp: FastMCP) -> None:
             limit: Maximum number of results (default 10)
         """
         from server.embeddings.jina import get_embedding_provider
-        from server.main import get_store
+        from server.state import get_store
 
         embedder = get_embedding_provider()
         store = get_store()
@@ -78,7 +78,7 @@ def register_search_tools(mcp: FastMCP) -> None:
             service: Optional service filter
             exact: If true, only exact name matches. If false (default), partial/fuzzy matching.
         """
-        from server.main import get_store
+        from server.state import get_store
 
         store = get_store()
         results = await store.find_by_name(name=name, symbol_type=symbol_type, service=service, exact=exact)
@@ -117,7 +117,7 @@ def register_search_tools(mcp: FastMCP) -> None:
             limit: Maximum number of results (default 10)
         """
         from server.embeddings.jina import get_embedding_provider
-        from server.main import get_store
+        from server.state import get_store
 
         embedder = get_embedding_provider()
         store = get_store()
@@ -187,7 +187,7 @@ def register_search_tools(mcp: FastMCP) -> None:
             return f"```\n{content}\n```"
 
         # Find the symbol in Qdrant for precise line numbers
-        from server.main import get_store
+        from server.state import get_store
         store = get_store()
         results = await store.find_by_name(name=symbol_name, exact=True)
         matched = [r for r in results if r.payload.get("file_path") == file_path]

@@ -197,14 +197,15 @@ services:
       - "6333:6333"
       - "6334:6334"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:6333/healthz || exit 1"]
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/6333' 2>/dev/null"]
       interval: 5s
       timeout: 3s
       retries: 10
 
   # ──── Code Embeddings (Jina Code V2 via HuggingFace TEI) ─────────────────────
   jina-embeddings:
-    image: ghcr.io/huggingface/text-embeddings-inference:cpu
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.6
+    platform: linux/amd64
     container_name: jina-embeddings
     command: --model-id jinaai/jina-embeddings-v2-base-code
     volumes:

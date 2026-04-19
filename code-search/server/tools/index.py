@@ -18,7 +18,7 @@ def register_index_tools(mcp: FastMCP) -> None:
             force: If true, re-embed all files even if unchanged. Defaults to false (incremental).
         """
         from server.indexer.pipeline import IndexPipeline
-        from server.main import get_store
+        from server.state import get_store
 
         store = get_store()
         pipeline = IndexPipeline(store)
