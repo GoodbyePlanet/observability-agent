@@ -55,9 +55,15 @@ class MCPManager:
             raise
 
     async def connect_all(self, servers: list[MCPServerConfig]) -> None:
-        """Connect to all configured MCP servers."""
+        """Connect to all configured MCP servers, skipping any that fail."""
         for server in servers:
-            await self.connect(server)
+            try:
+                await self.connect(server)
+            except Exception:
+                logger.warning(
+                    "Skipping MCP server '%s' — will start without it",
+                    server.name,
+                )
 
     async def close(self) -> None:
         """Close all MCP connections."""
@@ -85,6 +91,17 @@ class MCPManager:
     def get_server_names(self) -> list[str]:
         """Return names of all connected servers."""
         return list(self._connections.keys())
+
+    async def ping(self, server_name: str) -> bool:
+        """Ping an MCP server by listing its tools. Returns True if responsive."""
+        conn = self._connections.get(server_name)
+        if conn is None:
+            return False
+        try:
+            await conn.session.list_tools()
+            return True
+        except Exception:
+            return False
 
     def is_connected(self, server_name: str) -> bool:
         """Check if a specific server is connected."""

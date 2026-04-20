@@ -12,8 +12,14 @@ export interface Message {
   toolCalls: ToolCall[];
 }
 
+export interface McpServerStatus {
+  status: 'healthy' | 'unhealthy' | 'disconnected';
+  url: string;
+  tools?: number;
+}
+
 export interface HealthResponse {
   status: string;
-  mcp_servers: Record<string, string>;
-  model: string;
+  mcp_servers: Record<string, McpServerStatus>;
+  llm: { provider: string; model: string };
 }
