@@ -1,6 +1,6 @@
 # Coffee Shop: Observability, MCPs & AI Agents
 
-Excalidraw: https://excalidraw.com/#json=puGwdahvICYKs8IzaNkqg,uGCIgm53Htwf7mSXGJ9vDA
+Excalidraw: https://excalidraw.com/#json=tDw5wf64-4Ns3Dwo5mdtV,rW21pxrC5MEW5TLzKMzoTA
 
 ---
 

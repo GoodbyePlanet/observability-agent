@@ -11,6 +11,8 @@ const SUGGESTIONS = [
   'What services are sending traces?',
   'Show me the slowest traces from the last hour',
   'Are there any errors in recent traces?',
+  'Show me all error logs',
+  'Find me relevant code for ordering coffee',
 ];
 
 export function MessageList({ messages, onSuggestionClick }: MessageListProps) {
